@@ -4,6 +4,7 @@ BD = "base.db"
 
 
 def add_compra(Data):
+    '''Adciona uma compra'''
     conexao = sqlite3.connect(BD)
     cursor = conexao.cursor()
     sql = " INSERT INTO Compras ( Data, Total) VALUES ( '%s', '%d' )" % (Data, 0)
@@ -19,6 +20,7 @@ def add_compra(Data):
 
 
 def get_total(Id_compra):
+    '''Calcula o total da compra'''
     conexao = sqlite3.connect(BD)
     cursor = conexao.cursor()
     sql = " SELECT Total FROM Compras WHERE Id_compra= '%d'" % Id_compra
@@ -30,6 +32,7 @@ def get_total(Id_compra):
 
 ##########################################################
 def exibir_listas():
+    '''Exibi as listas'''
     conexao = sqlite3.connect(BD)
     cursor = conexao.cursor()
     sql = " SELECT * FROM Compras"
