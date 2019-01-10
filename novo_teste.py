@@ -48,9 +48,9 @@ def exibir_listas():
 
 
 ####################################################
-def listar_produtos():
+def listar_produtos(Id_compra):
     conexao = sqlite3.connect(BD)  # sempre preciso criar conexao com o banco
-    sql = "SELECT * FROM Produto"
+    sql = "SELECT * FROM Produto where Id_compra == '%s'" % Id_compra
     cursor = conexao.cursor()  # pego os codigos roda no bd
     cursor.execute(sql)
     Produtos = cursor.fetchall()  # seleciona tudo ta tabela
@@ -103,10 +103,10 @@ def inserir_produto_lista(Descricao, Quantidade, Valor_unitario, Id_compra):
 
 ##########################################################################
 
-def buscar_por_id(Id_produto):
+def buscar_por_id(Id_produto,Id_compra):
     conexao = sqlite3.connect(BD)  # sempre preciso criar conexao com o banco
     cursor = conexao.cursor()  # pego os codigos roda no bd
-    sql = "SELECT * FROM Produto WHERE Id_produto='%d'" % Id_produto
+    sql = "SELECT * FROM Produto WHERE Id_produto='%d' and Id_compra == '%s'" % (Id_produto, Id_compra)
     cursor.execute(sql)
     Produto = cursor.fetchone()
     if Produto:
@@ -122,13 +122,13 @@ def buscar_por_id(Id_produto):
 
 #########################################################################
 
-def excluir_produto_p_id(Id_produto):
-    if buscar_por_id(Id_produto):
+def excluir_produto_p_id(Id_produto, Id_compra):
+    if buscar_por_id(Id_produto, Id_compra):
         resposta = input("Deseja realmente excluir esse produto?").lower()
         if resposta == 's':
             conexao = sqlite3.connect(BD)
             cursor = conexao.cursor()
-            sql = "DELETE FROM Produto WHERE Id_produto='%d'" % Id_produto
+            sql = "DELETE FROM Produto WHERE Id_produto='%d' and Id_compra == '%s'" % (Id_produto, Id_compra)
             cursor.execute(sql)
             if cursor.rowcount == 1:
                 conexao.commit()
@@ -139,12 +139,12 @@ def excluir_produto_p_id(Id_produto):
 
 
 #########################################################################
-def alterar_preco(Id_produto):
-    if buscar_por_id(Id_produto):
+def alterar_preco(Id_produto, Id_compra):
+    if buscar_por_id(Id_produto, Id_compra):
         Valor_unitario = float(input('Informe o novo preço do produto'))
         conexao = sqlite3.connect(BD)
         cursor = conexao.cursor()
-        sql = "UPDATE Produto SET Valor_unitario='%d' WHERE Id_produto='%d'" % (Valor_unitario, Id_produto)
+        sql = "UPDATE Produto SET Valor_unitario='%d' WHERE Id_produto='%d' and Id_compra == '%s'" % (Valor_unitario, Id_produto, Id_compra)
         cursor.execute(sql)
         if cursor.rowcount == 1:
             conexao.commit()
@@ -198,6 +198,72 @@ def somar_produtos(listar_produtos):
     cursor = conexao.cursor()
 
 
+print("#" * 40)
+print("            MENU              ")
+print(" 1 - Adicionar Compras")
+print(" 2 - Cadastrar Produto")
+print(" 3 - Listar todos os Produtos de uma determinada compra")
+print(" 4 - Buscar Produto por ID")
+print(" 5 - Excluir Produto por ID")
+print(" 6 - Alterar preço")
+print(" 7 - Alterar descrição")
+print(" 8 - Buscar por descrição")
+print(" 9 - Exibir listas de compra")
+print(" 10 - Ver o total de determinada compra")
+print(" 11 - Sair")
+print("#" * 40)
+
+
+op = 0
+while op != 11:
+    op = int(input("digite uma opção: "))
+    if op == 1:
+        Data = str(input("comece uma compra informando a data"))
+        add_compra(Data)
+
+    if op == 2:
+        Descricao = input("Informe o nome do produto:")
+        Quantidade = int(input("Informe a quantidade de produtos que irá comprar: "))
+        Valor_unitario = int(input("Informe o valor do produto: "))
+        Id_compra = int(input("Informe o código da compra: "))
+
+        inserir_produto_lista(Descricao, Quantidade, Valor_unitario, Id_compra)
+
+    if op == 3:
+        Id_compra = input("Digite aqui o Id da compra que voce deseja listar:")
+        listar_produtos(Id_compra)
+
+    if op == 4:
+        Id_compra = int(input("Informe o Id do compra: "))
+        Id_produto = int(input("Informe o Id do produto: "))
+        buscar_por_id(Id_produto,Id_compra)
+
+    if op == 5:
+        Id_compra = int(input("Informe o Id do compra: "))
+        Id_produto = int(input("Informe o Id do produto: "))
+        excluir_produto_p_id(Id_produto, Id_compra)
+
+    if op == 6:
+        Id_compra = int(input("Informe o Id do compra: "))
+        Id_produto = int(input("Informe o Id do produto: "))
+        alterar_preco = input("Informe o novo preço: ")
+        alterar_preco(Id_produto, Id_compra)
+
+    if op == 7:
+        descricao = input('Informe a nova descrição do produto')
+        alterar_descricao(Id_produto)
+
+    if op == 8:
+        Descricao = input("Informe a descrição do produto: ")
+        buscar_por_descricao(Descricao)
+
+    if op == 9:
+        exibir_listas()
+        print(get_total(1))
+
+    if op == 10:
+        Id_compra = int(input("informe o ID da compra para ver o total: "))
+        print(get_total(Id_compra))
 
 
 
@@ -205,7 +271,7 @@ def somar_produtos(listar_produtos):
 
 # fazer a funçao para consultar a compra e depois dar o total de todos os produtos que o cliente quer comprar
 
-# add_compra("2018-05-26")
+# add_compra("2018-05-26")and Id_compra
 # cadastrar("Notebook", 567, "10.22", 1)
 # buscar_por_id(10)
 # buscar_por_descricao('N')
@@ -214,3 +280,5 @@ def somar_produtos(listar_produtos):
 # alterar_preco(10)
 # alterar_descricao(10)
 # exibir_listas()
+
+ajeitar a parte de alterar preço e inserir as outras
